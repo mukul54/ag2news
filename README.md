@@ -46,10 +46,10 @@ You can customize experiment settings in `config.py`:
 ```python
 # General configuration
 RANDOM_SEED = 42
-BATCH_SIZE = 16
+BATCH_SIZE = 128
 NUM_EPOCHS = 5
 NUM_RUNS = 3
-MAX_SEQ_LENGTH = 128  # Can be increased for better performance if GPU memory allows
+MAX_SEQ_LENGTH = 256 
 ```
 
 ## Project Structure

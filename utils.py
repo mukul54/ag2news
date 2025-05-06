@@ -14,12 +14,11 @@ def get_optimizer(model, config_name):
         return optimizer, {"learning_rate": 5e-5}
     
     elif config_name == "prompt_tuning":
-        # Only optimize prompt embeddings and classifier
-        optimizer = optim.AdamW(
-            list(model.prompt_embeddings.parameters()) + 
-            list(model.classifier.parameters()), 
-            lr=5e-4
-        )
+        # Fix: Don't call .parameters() on prompt_embeddings since it's already a Parameter
+        optimizer = optim.AdamW([
+            model.prompt_embeddings,  # This is already a nn.Parameter
+            *model.classifier.parameters()  # Unpack the parameters from classifier
+        ], lr=5e-4)
         return optimizer, {"learning_rate": 5e-4, "num_prompt_tokens": 20}
     
     elif config_name == "partial_finetuning":
@@ -30,7 +29,7 @@ def get_optimizer(model, config_name):
         # Define optimizer with parameter groups
         optimizer_grouped_parameters = [
             {'params': model.classifier.parameters(), 'lr': top_lr},
-            {'params': [p for n, p in model.named_parameters() if 'classifier' not in n], 'lr': base_lr}
+            {'params': [p for n, p in model.named_parameters() if 'classifier' not in n and p.requires_grad], 'lr': base_lr}
         ]
         
         optimizer = optim.AdamW(optimizer_grouped_parameters)

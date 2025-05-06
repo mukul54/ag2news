@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 from transformers import GPT2Model
+from config import MODEL_CONFIGS
 
 # Base GPT-2 classifier model
 class GPT2ForSequenceClassification(nn.Module):
@@ -21,9 +22,11 @@ class GPT2ForSequenceClassification(nn.Module):
 
 # Prompt tuning model
 class GPT2PromptTuning(nn.Module):
-    def __init__(self, num_classes=4, model_name="gpt2", num_prompt_tokens=20):
+    def __init__(self, num_classes=4, model_name="gpt2", num_prompt_tokens=None):
         super(GPT2PromptTuning, self).__init__()
         self.num_classes = num_classes
+        if num_prompt_tokens is None:
+            num_prompt_tokens = MODEL_CONFIGS["prompt_tuning"]["num_prompt_tokens"]
         self.num_prompt_tokens = num_prompt_tokens
         
         self.gpt2 = GPT2Model.from_pretrained(model_name)
@@ -68,9 +71,12 @@ class GPT2PromptTuning(nn.Module):
 
 # Partial fine-tuning model
 class GPT2PartialFineTuning(nn.Module):
-    def __init__(self, num_classes=4, model_name="gpt2", freeze_percentage=0.5):
+    def __init__(self, num_classes=4, model_name="gpt2", freeze_percentage=None):
         super(GPT2PartialFineTuning, self).__init__()
         self.num_classes = num_classes
+        if freeze_percentage is None:
+            freeze_percentage = MODEL_CONFIGS["partial_finetuning"]["freeze_percentage"]
+        
         self.gpt2 = GPT2Model.from_pretrained(model_name)
         self.config = self.gpt2.config
         self.classifier = nn.Linear(self.config.n_embd, num_classes)
