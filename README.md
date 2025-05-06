@@ -14,8 +14,8 @@ The AG News dataset consists of news articles categorized into 4 classes: World,
 
 ```bash
 # Clone the repository
-git clone https://github.com/mukul54/gpt2-agnews.git
-cd gpt2-agnews
+git clone https://github.com/mukul54/agnews.git
+cd agnews
 
 # Install requirements
 pip install -r requirements.txt
